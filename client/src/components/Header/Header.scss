@@ -1,0 +1,81 @@
+.header.sticky {
+    min-height: 100px;
+    background-color: #fff;
+    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.header {
+    position: fixed;
+    width: 100%;
+    min-height: 120px;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    background: transparent;
+    transition: all 0.5s ease-in-out;
+    .bars {
+        display: none;
+    }
+    .logo {
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+    .navbar {
+        display: flex;
+        align-items: center;
+        ul {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            list-style: none;
+            li {
+                padding-right: 50px;
+                i {
+                    color: #999;
+                    transition: all 0.4s ease-in-out;
+                    position: relative;
+                    &:hover {
+                        transition: all 0.4s ease-in-out;
+                        color: black;
+                    }
+                    .items__count {
+                        position: absolute;
+                        z-index: 9999;
+                        bottom: -7px;
+                        right: -3px;
+
+                        text-align: center;
+                        width: 14px;
+                        height: 14px;
+                        border-radius: 7px;
+                        background-color: #ff0157;
+                        p {
+                            color: #fff;
+                            font-size: 10px;
+                        }
+                    }
+                }
+            }
+        }
+        &__link {
+            font-size: 1.2em;
+            color: #999;
+            transition: all 0.4s ease-in-out;
+            text-decoration: none;
+            &:hover {
+                transition: all 0.4s ease-in-out;
+                color: black;
+            }
+        }
+    }
+}
+@media only screen and (max-width: 992px) {
+    .header {
+        .logo {
+        }
+        .navbar {
+            display: none;
+        }
+    }
+}

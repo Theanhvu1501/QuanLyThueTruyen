@@ -1,0 +1,46 @@
+.form-cart {
+    padding-top: 50px;
+    td {
+        padding-top: 30px;
+        overflow: hidden;
+    }
+    .product-thumbnail {
+        width: 100px;
+        img {
+            width: 100px;
+            object-fit: cover;
+        }
+    }
+    .product-title {
+        width: 40%;
+    }
+    .product-price {
+    }
+    .product-quantity {
+        &__box {
+            border: 1px solid black;
+            width: 120px;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 20px;
+            span {
+                cursor: pointer;
+            }
+        }
+    }
+    .product-remove {
+        cursor: pointer;
+    }
+}
+.btn-shop {
+    cursor: pointer;
+    background-color: black;
+    width: 180px;
+    height: 50px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 30px;
+    color: blanchedalmond;
+    text-decoration: none;
+}

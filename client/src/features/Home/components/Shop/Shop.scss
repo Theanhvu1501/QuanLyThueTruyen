@@ -1,0 +1,45 @@
+.shop {
+    position: relative;
+    margin-top: 100px;
+    min-height: 200px;
+    &__toolBar {
+        display: flex;
+        align-items: center;
+
+        ul {
+            display: flex;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            li {
+                padding-right: 70px;
+            }
+        }
+        &__link.active {
+            color: red;
+        }
+        &__link {
+            color: #b0b0b0;
+            font-weight: 300;
+            font-size: 20px;
+            transition: all 0.4s ease-in-out;
+            text-decoration: none;
+            cursor: pointer;
+            &:hover {
+                color: red;
+                transition: all 0.4s ease-in-out;
+            }
+        }
+    }
+    &__search {
+        margin-top: -33px;
+        overflow: hidden;
+    }
+}
+@media only screen and (max-width: 992px) {
+    .shop {
+        &__toolBar {
+            display: none;
+        }
+    }
+}

@@ -1,0 +1,30 @@
+.banner {
+    min-height: 100vh;
+
+    background: url("../../../../assets/images/banner.jpg");
+
+    background-attachment: fixed;
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .box {
+        width: 500px;
+        height: 130px;
+        background-color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
+        &__content {
+            font-size: 50px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 20px;
+        }
+    }
+}

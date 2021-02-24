@@ -1,0 +1,20 @@
+.post {
+    text-align: center;
+    &__title {
+        margin-top: 45px;
+        font-weight: 700;
+        font-size: 27px;
+    }
+    &__description {
+        color: #999;
+        padding: 20px 100px;
+        padding-bottom: 100px;
+    }
+}
+@media only screen and (max-width: 992px) {
+    .post {
+        &__description {
+            padding: 20px 20px;
+        }
+    }
+}
