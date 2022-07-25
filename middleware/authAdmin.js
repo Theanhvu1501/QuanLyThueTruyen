@@ -1,4 +1,4 @@
-const Users = require('../models/userModel')
+const Users = require('../models/adminModel')
 
 const authAdmin = async (req, res, next) =>{
     try {

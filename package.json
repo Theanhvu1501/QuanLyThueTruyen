@@ -26,7 +26,10 @@
     "express": "^4.17.1",
     "express-fileupload": "^1.2.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.10.1"
+    "lodash": "^4.17.21",
+    "mongoose": "^5.10.1",
+    "msnodesqlv8": "^2.6.0",
+    "mssql": "^8.1.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"

@@ -1,39 +1,32 @@
-const Users = require('../models/userModel')
-const Payments = require('../models/paymentModel')
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const { adminService } = require('../models/adminModel');
+const { connect } = require("../connectSql");
 
-const userCtrl = {
+const adminCtrl = {
     register: async (req, res) =>{
         try {
             const {name, email, password} = req.body;
-
-            const user = await Users.findOne({email})
-            if(user) return res.status(400).json({msg: "The email already exists."})
-
             if(password.length < 6) 
                 return res.status(400).json({msg: "Password is at least 6 characters long."})
-
             // Password Encryption
             const passwordHash = await bcrypt.hash(password, 10)
-            const newUser = new Users({
+            const newUser =  {
                 name, email, password: passwordHash
-            })
+            }
 
-            // Save mongodb
-            await newUser.save()
-
+            const admin = await adminService.create(newUser)
             // Then create jsonwebtoken to authentication
-            const accesstoken = createAccessToken({id: newUser._id})
-            const refreshtoken = createRefreshToken({id: newUser._id})
+            // const accesstoken = createAccessToken({id: admin.Id})
+            // const refreshtoken = createRefreshToken({id: admin.Id})
 
-            res.cookie('refreshtoken', refreshtoken, {
-                httpOnly: true,
-                path: '/user/refresh_token',
-                maxAge: 7*24*60*60*1000 // 7d
-            })
+            // res.cookie('refreshtoken', refreshtoken, {
+            //     httpOnly: true,
+            //     path: '/user/refresh_token',
+            //     maxAge: 7*24*60*60*1000 // 7d
+            // })
 
-            res.json({accesstoken})
+            // res.json({accesstoken})
 
         } catch (err) {
             return res.status(500).json({msg: "error"})
@@ -42,12 +35,11 @@ const userCtrl = {
     login: async (req, res) =>{
         try {
             const {email, password} = req.body;
-            const user = await Users.findOne({email})
+            const pool = await connect;
+            const user = await (await pool.query(`Select top(1) * from Admin where email = '${email}'`)).recordset[0]
             if(!user) return res.status(400).json({msg: "User does not exist."})
-
             const isMatch = await bcrypt.compare(password, user.password)
             if(!isMatch) return res.status(400).json({msg: "Incorrect password."})
-
             // If login success , create access token and refresh token
             const accesstoken = createAccessToken({id: user._id})
             const refreshtoken = createRefreshToken({id: user._id})
@@ -131,5 +123,5 @@ const createRefreshToken = (user) =>{
     return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '7d'})
 }
 
-module.exports = userCtrl
+module.exports = adminCtrl
 
