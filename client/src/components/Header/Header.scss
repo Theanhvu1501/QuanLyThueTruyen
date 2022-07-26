@@ -18,6 +18,42 @@
     }
     
 }
+
+.user_buttonAccess {
+    font-family: Arial;
+    font-weight: normal !important;
+    height: 97px;
+    align-items: center;
+    justify-content: space-evenly;
+    display: flex;
+    & > button {
+      font-size: 14px !important;
+      display: flex;
+      color: white;
+      align-items: center;
+      &:hover {
+        color: white;
+      }
+      &:visited {
+        color: white;
+      }
+      &:focus {
+        color: white;
+      }
+      & > span {
+        margin-left: 10px;
+      }
+    }
+    &_myAccount {
+      background-color: #f7353b !important;
+      border-color: #f7353b !important;
+    }
+    &_signOut {
+      background-color: #faad14 !important;
+      border-color: #faad14 !important;
+    }
+  }
+
 @media only screen and (max-width: 992px) {
     .header {
         .logo {

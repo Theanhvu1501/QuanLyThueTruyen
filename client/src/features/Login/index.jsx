@@ -25,12 +25,9 @@ export default function Login() {
     const { isSubmitting } = formState
     const onSubmit = async (data) => {
         try {
-            await axios.post('user/login', data)
-
-            localStorage.setItem('firstLogin', true)
-
-            window.location.href = '/'
-
+            // await axios.post('user/login', data)
+            // localStorage.setItem('firstLogin', true)
+            window.location.href = '/home'
         } catch (error) {
             alert(error.response.data.msg)
         }
@@ -66,10 +63,9 @@ export default function Login() {
                         <FormGroup>
                             <Button type='submit'>
                                 {isSubmitting ? <Spinner size='sm' /> : null}
-                                submit
-
+                                Login
                             </Button>
-                            <Link to='/register' className="btn-link">Register</Link>
+                            {/* <Link to='/register' className="btn-link">Register</Link> */}
                         </FormGroup>
                     </Form>
                 </div>
