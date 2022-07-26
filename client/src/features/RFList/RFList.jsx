@@ -28,6 +28,7 @@ export default function RFlist() {
     onChange: (selectedRowKeys, selectedRows) => {
       setSelectedRows(selectedRows);
     },
+
   };
 
   const columns = [
@@ -40,8 +41,8 @@ export default function RFlist() {
       },
     },
     {
-      title: "Name",
-      dataIndex: "name",
+      title: "Tên",
+      dataIndex: "Ten",
       render: (text, record, index) => (
         <span
           style={{ cursor: "pointer" }}
@@ -49,43 +50,51 @@ export default function RFlist() {
             modalRef.current.show();
           }}
         >
-          {record.name}
+          {record.Ten}
         </span>
       ),
     },
     {
-      title: "Age",
-      dataIndex: "age",
+      title: "Giá thuê",
+      dataIndex: "GiaThue",
     },
     {
-      title: "Address",
-      dataIndex: "address",
+      title: "Đặt cọc",
+      dataIndex: "DatCoc",
+    },
+    {
+      title: "TheLoai",
+      dataIndex: "TheLoai",
     },
   ];
   const data = [
     {
-      key: "1",
-      name: "John Brown",
-      age: 32,
-      address: "New York No. 1 Lake Park",
+      Id: "1",
+      Ten: "sala",
+      GiaThue: 212020,
+      DatCoc: 3200,
+      TheLoai: "Trinh tham",
     },
     {
-      key: "2",
-      name: "Jim Green",
-      age: 42,
-      address: "London No. 1 Lake Park",
+      Id: "2",
+      Ten: "John ",
+      GiaThue: 34930,
+      DatCoc: 3200,
+      TheLoai: "Trinh tham",
     },
     {
-      key: "3",
-      name: "Joe Black",
-      age: 32,
-      address: "Sidney No. 1 Lake Park",
+      Id: "4",
+      Ten: " Brown",
+      GiaThue: 980000,
+      DatCoc: 32200,
+      TheLoai: "Trinh tham",
     },
     {
-      key: "4",
-      name: "Disabled User",
-      age: 99,
-      address: "Sidney No. 1 Lake Park",
+      Id: "5",
+      Ten: "Kale",
+      GiaThue: 320000,
+      DatCoc: 3200,
+      TheLoai: "Trinh tham",
     },
   ];
   return (
@@ -173,6 +182,7 @@ export default function RFlist() {
             type: "checkbox",
             ...rowSelection,
           }}
+          rowKey='Id'
           columns={columns}
           dataSource={data}
           locale={{
