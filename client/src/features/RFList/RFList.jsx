@@ -1,11 +1,20 @@
 import { Progress, Spin, Table } from "antd";
-import React, { useEffect, useState } from "react";
-import { emptyIcon, logoIconLoading, iconExcel } from "../../const/svg";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  emptyIcon,
+  logoIconLoading,
+  iconExcel,
+  addIcon,
+  deleteIcon,
+} from "../../const/svg";
+import { RFModal } from "./RFModal";
 
 export default function RFlist() {
   const [progressPercent, setProgressPercent] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [selectedRows, setSelectedRows] = useState([]);
 
+  const [loading, setLoading] = useState(false);
+  const modalRef = useRef();
   useEffect(() => {
     const interval = setInterval(() => {
       if (progressPercent < 90) {
@@ -15,20 +24,34 @@ export default function RFlist() {
     return () => clearInterval(interval);
   }, [progressPercent]);
 
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      setSelectedRows(selectedRows);
+    },
+  };
+
   const columns = [
     {
       title: "STT",
       dataIndex: "stt",
-      width:100,
-      render: (text, record,index) => {
-        console.log(text, index,record);
+      width: 100,
+      render: (text, record, index) => {
         return <span>{index + 1}</span>;
       },
     },
     {
       title: "Name",
       dataIndex: "name",
-      render: (text) => <a>{text}</a>,
+      render: (text, record, index) => (
+        <span
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            modalRef.current.show();
+          }}
+        >
+          {record.name}
+        </span>
+      ),
     },
     {
       title: "Age",
@@ -40,78 +63,6 @@ export default function RFlist() {
     },
   ];
   const data = [
-    {
-      key: "1",
-      name: "John Brown",
-      age: 32,
-      address: "New York No. 1 Lake Park",
-    },
-    {
-      key: "2",
-      name: "Jim Green",
-      age: 42,
-      address: "London No. 1 Lake Park",
-    },
-    {
-      key: "3",
-      name: "Joe Black",
-      age: 32,
-      address: "Sidney No. 1 Lake Park",
-    },
-    {
-      key: "4",
-      name: "Disabled User",
-      age: 99,
-      address: "Sidney No. 1 Lake Park",
-    },
-    {
-      key: "1",
-      name: "John Brown",
-      age: 32,
-      address: "New York No. 1 Lake Park",
-    },
-    {
-      key: "2",
-      name: "Jim Green",
-      age: 42,
-      address: "London No. 1 Lake Park",
-    },
-    {
-      key: "3",
-      name: "Joe Black",
-      age: 32,
-      address: "Sidney No. 1 Lake Park",
-    },
-    {
-      key: "4",
-      name: "Disabled User",
-      age: 99,
-      address: "Sidney No. 1 Lake Park",
-    },
-    {
-      key: "1",
-      name: "John Brown",
-      age: 32,
-      address: "New York No. 1 Lake Park",
-    },
-    {
-      key: "2",
-      name: "Jim Green",
-      age: 42,
-      address: "London No. 1 Lake Park",
-    },
-    {
-      key: "3",
-      name: "Joe Black",
-      age: 32,
-      address: "Sidney No. 1 Lake Park",
-    },
-    {
-      key: "4",
-      name: "Disabled User",
-      age: 99,
-      address: "Sidney No. 1 Lake Park",
-    },
     {
       key: "1",
       name: "John Brown",
@@ -166,24 +117,71 @@ export default function RFlist() {
         />
         <div style={{ marginRight: 12 }}>{iconExcel}</div>
         <span>Xuất excel</span>
+        <div
+          style={{
+            marginRight: 32,
+            marginLeft: 32,
+            height: 20,
+            backgroundColor: "gray",
+            width: 1,
+          }}
+        />
+        <div style={{ marginRight: 12 }}>{addIcon}</div>
+        <span
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            modalRef.current.show(true);
+          }}
+        >
+          Thêm
+        </span>
+        {selectedRows.length > 0 && (
+          <>
+            {" "}
+            <div
+              style={{
+                marginRight: 32,
+                marginLeft: 32,
+                height: 20,
+                backgroundColor: "gray",
+                width: 1,
+              }}
+            />
+            <div style={{ marginRight: 12 }}>{deleteIcon}</div>
+            <span style={{ cursor: "pointer" }} onClick={() => {}}>
+              Delete
+            </span>
+          </>
+        )}
       </div>
       {loading ? (
-        <Progress strokeWidth={1} percent={progressPercent} showInfo={false} style={{position:'absolute',fontSize:0,zIndex:1,width:`calc(100% - 256px`}}/>
+        <Progress
+          strokeWidth={1}
+          percent={progressPercent}
+          showInfo={false}
+          style={{
+            position: "absolute",
+            fontSize: 0,
+            zIndex: 1,
+            width: `calc(100% - 256px`,
+          }}
+        />
       ) : null}
       <Spin spinning={loading} indicator={logoIconLoading}>
         <Table
-          // rowSelection={{
-          //   type: selectionType,
-          //   ...rowSelection,
-          // }}
+          rowSelection={{
+            type: "checkbox",
+            ...rowSelection,
+          }}
           columns={columns}
           dataSource={data}
           locale={{
             emptyText: loading ? <div /> : emptyIcon,
           }}
           pagination={false}
-          scroll={{y:`calc(100vh - 200px)`}}
+          scroll={{ y: `calc(100vh - 200px)` }}
         />
+        <RFModal ref={modalRef} />
       </Spin>
     </div>
   );

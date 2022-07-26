@@ -1,25 +1,17 @@
-import { Button, Row } from "antd";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import React, { Suspense, useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import authAPI from "./api/authAPI";
-import Footer from "./components/Footer";
-import Header from "./components/Header";
 import NotFound from "./components/NotFound";
-import Sidebar from "./components/Sidebar/Sidebar";
-import Blog from "./features/Blog";
-import Cart from "./features/Cart";
+import Shop from "./features/Home/components/Shop";
 import Login from "./features/Login";
 import Pages from "./features/Pages";
-import Register from "./features/Register";
-import RFlist from "./features/RFList/RFList";
-import Shop from "./features/Shop";
 import {
   isAdminState,
   isLoggedState,
-  tokenState,
+  tokenState
 } from "./recoilState/authState";
 import { cartState } from "./recoilState/cartState";
 const Home = React.lazy(() => import("./features/Home"));
@@ -113,8 +105,8 @@ function App() {
           <Switch>
             <Route path="/" exact component={Login} />
             <Route path="/home"  component={Pages} />
+            {/* <Route path="/shop" component={Shop} /> */}
             {/* <Route path="/blog" component={Blog} />
-            <Route path="/shop" component={Shop} />
             <Route path="/register" component={Register} />
             <Route path="/cart" component={Cart} /> */}
             <Route component={NotFound} />

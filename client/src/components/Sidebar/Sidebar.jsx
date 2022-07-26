@@ -2,7 +2,7 @@ import React from 'react';
 import 'antd/dist/antd.css';
 import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
-
+import { useHistory } from 'react-router-dom';
 
 function getItem(label, key, icon, children, type) {
   return {
@@ -16,17 +16,17 @@ function getItem(label, key, icon, children, type) {
 
 const items = [
   getItem('Sách', 'sub1', <MailOutlined />, [
-    getItem('Sách', '1'),
-    getItem('Sách tại cửa hàng', '2'),
+    getItem('Sách', 'Sach'),
+    getItem('Sách tại cửa hàng', 'SachTaiCuaHang'),
 
   ]),
 
   getItem('Nhân sư', 'sub2', <AppstoreOutlined />, [
-    getItem('Khách hàng', 'KH'),
-    getItem('Nhân viên', 'NV'),
+    getItem('Khách hàng', 'KhachHang'),
+    getItem('Nhân viên', 'NhanVien'),
   ]),
     getItem('Giao dịch', 'sub3', <MailOutlined />, [
-    getItem('Thông tin giao dịch', 'HD'),
+    getItem('Thông tin giao dịch', 'ThongTinGiaoDich'),
   ]),
   getItem('Thống kê', 'sub4', <SettingOutlined />, [
     getItem('Option 9', '9'),
@@ -41,8 +41,9 @@ const items = [
 ];
 
 const Sidebar = () => {
+  const history = useHistory();
   const onClick = (e) => {
-    console.log('click ', e);
+    history.push(`/home/${e.key}`)
   };
 
   return (
@@ -52,7 +53,7 @@ const Sidebar = () => {
         width: 256,
       }}
       defaultSelectedKeys={['1']}
-      defaultOpenKeys={['sub1']}
+      defaultOpenKeys={['sub1','sub2','sub3','sub4']}
       mode="inline"
       items={items}
     />
