@@ -46,13 +46,14 @@ class SServiceBase {
     const values = this.convertDataCreate(_.omit(object, "Id"));
     const query = `insert into ${this.tableName} (${fields}) values (${values})`;
     await this.pool.query(query);
-    return await this.getById(_.get(object, "Id"));
   }
 
   convertDataUpdate(object) {
     return Object.keys(object)
       .map((key) => {
-        const value = _.isString(object[key]) ? `'${object[key]}'` : object[key];
+        const value = _.isString(object[key])
+          ? `'${object[key]}'`
+          : object[key];
         return `${key} = ${value}`;
       })
       .join(",");

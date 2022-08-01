@@ -1,5 +1,10 @@
-import { Progress, Spin, Table } from "antd";
+import { message, Progress, Spin, Table } from "antd";
 import React, { useEffect, useRef, useState } from "react";
+import bookAPI from "../../api/bookAPI";
+import bookStoreAPI from "../../api/bookStoreAPI";
+import customerAPI from "../../api/customerAPI";
+import rentAPI from "../../api/rentAPI";
+import staffAPI from "../../api/staffAPI";
 import {
   emptyIcon,
   logoIconLoading,
@@ -9,12 +14,23 @@ import {
 } from "../../const/svg";
 import { RFModal } from "./RFModal";
 
-export default function RFlist() {
+export default function RFlist(props) {
   const [progressPercent, setProgressPercent] = useState(1);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [data, setData] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const modalRef = useRef();
+
+  const apiService = () => {
+    const { path } = props;
+    if (path.includes("ThongTinGiaoDich")) return rentAPI;
+    if (path.includes("KhachHang")) return customerAPI;
+    if (path.includes("NhanVien")) return staffAPI;
+    if (path.includes("SachTaiCuaHang")) return bookStoreAPI;
+    return bookAPI;
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (progressPercent < 90) {
@@ -24,11 +40,37 @@ export default function RFlist() {
     return () => clearInterval(interval);
   }, [progressPercent]);
 
+  //useEffac
+  const fetchAPI = async () => {
+    setLoading(true);
+    const api = apiService();
+    const data = await api.getAll();
+    setLoading(false);
+    setData(data);
+  };
+
+  const onDelete = async () => {
+    console.log(selectedRows);
+    const api = apiService();
+    try {
+      await Promise.all(
+        selectedRows.map((data) => {
+          return api.delete(data.Id);
+        })
+      );
+    } catch (e) {
+      message.error("error");
+    }
+  };
+  //Fetch api
+  useEffect(() => {
+    fetchAPI();
+  }, [props.path]);
+
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       setSelectedRows(selectedRows);
     },
-
   };
 
   const columns = [
@@ -46,8 +88,11 @@ export default function RFlist() {
       render: (text, record, index) => (
         <span
           style={{ cursor: "pointer" }}
-          onClick={() => {
-            modalRef.current.show();
+          onClick={async () => {
+            const result = await modalRef.current.show(false, record);
+            if (result.dataChange) {
+              fetchAPI();
+            }
           }}
         >
           {record.Ten}
@@ -67,36 +112,7 @@ export default function RFlist() {
       dataIndex: "TheLoai",
     },
   ];
-  const data = [
-    {
-      Id: "1",
-      Ten: "sala",
-      GiaThue: 212020,
-      DatCoc: 3200,
-      TheLoai: "Trinh tham",
-    },
-    {
-      Id: "2",
-      Ten: "John ",
-      GiaThue: 34930,
-      DatCoc: 3200,
-      TheLoai: "Trinh tham",
-    },
-    {
-      Id: "4",
-      Ten: " Brown",
-      GiaThue: 980000,
-      DatCoc: 32200,
-      TheLoai: "Trinh tham",
-    },
-    {
-      Id: "5",
-      Ten: "Kale",
-      GiaThue: 320000,
-      DatCoc: 3200,
-      TheLoai: "Trinh tham",
-    },
-  ];
+
   return (
     <div
       style={{
@@ -138,8 +154,11 @@ export default function RFlist() {
         <div style={{ marginRight: 12 }}>{addIcon}</div>
         <span
           style={{ cursor: "pointer" }}
-          onClick={() => {
-            modalRef.current.show(true);
+          onClick={async () => {
+            const result = await modalRef.current.show(true);
+            if (result.dataChange) {
+              fetchAPI();
+            }
           }}
         >
           Thêm
@@ -157,7 +176,7 @@ export default function RFlist() {
               }}
             />
             <div style={{ marginRight: 12 }}>{deleteIcon}</div>
-            <span style={{ cursor: "pointer" }} onClick={() => {}}>
+            <span style={{ cursor: "pointer" }} onClick={() => onDelete()}>
               Delete
             </span>
           </>
@@ -182,7 +201,7 @@ export default function RFlist() {
             type: "checkbox",
             ...rowSelection,
           }}
-          rowKey='Id'
+          rowKey="Id"
           columns={columns}
           dataSource={data}
           locale={{
@@ -191,7 +210,7 @@ export default function RFlist() {
           pagination={false}
           scroll={{ y: `calc(100vh - 200px)` }}
         />
-        <RFModal ref={modalRef} />
+        <RFModal ref={modalRef} api={apiService()} />
       </Spin>
     </div>
   );

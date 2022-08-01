@@ -1,16 +1,12 @@
-const router = require('express').Router()
-const storeCtrl = require('../controllers/storeCtrl')
-const auth = require('../middleware/auth')
+const router = require("express").Router();
+const storeCtrl = require("../controllers/storeCtrl");
+const auth = require("../middleware/auth");
 
+router.route("/stores").get(storeCtrl.getStores).post(storeCtrl.createStore);
 
-router.route('/stores')
-    .get(auth,storeCtrl.getStores)
-    .post(auth, storeCtrl.createStore)
+router
+  .route("/store/:id")
+  .delete(storeCtrl.deleteStore)
+  .put(storeCtrl.updateStore);
 
-
-router.route('/store/:id')
-    .delete( auth,storeCtrl.deleteStore)
-    .put(auth, storeCtrl.updateStore)
-
-
-module.exports = router
+module.exports = router;

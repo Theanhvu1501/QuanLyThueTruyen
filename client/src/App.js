@@ -11,7 +11,7 @@ import Pages from "./features/Pages";
 import {
   isAdminState,
   isLoggedState,
-  tokenState
+  tokenState,
 } from "./recoilState/authState";
 import { cartState } from "./recoilState/cartState";
 const Home = React.lazy(() => import("./features/Home"));
@@ -22,21 +22,21 @@ function App() {
   const setIsAdmin = useSetRecoilState(isAdminState);
   const setCart = useSetRecoilState(cartState);
 
-  //refresh_token
-  useEffect(() => {
-    const firstLogin = localStorage.getItem("firstLogin");
-    if (firstLogin) {
-      const refreshToken = async () => {
-        try {
-          const token = await axios.get("user/refresh_token");
-          setToken(token.data.accesstoken);
-        } catch (error) {
-          console.log(error.message);
-        }
-      };
-      refreshToken();
-    }
-  }, []);
+  // //refresh_token
+  // useEffect(() => {
+  //   const firstLogin = localStorage.getItem("firstLogin");
+  //   if (firstLogin) {
+  //     const refreshToken = async () => {
+  //       try {
+  //         const token = await axios.get("user/refresh_token");
+  //         setToken(token.data.accesstoken);
+  //       } catch (error) {
+  //         console.log(error.message);
+  //       }
+  //     };
+  //     refreshToken();
+  //   }
+  // }, []);
 
   //check Login
   useEffect(() => {
@@ -104,7 +104,7 @@ function App() {
           </Row> */}
           <Switch>
             <Route path="/" exact component={Login} />
-            <Route path="/home"  component={Pages} />
+            <Route path="/home" component={Pages} />
             {/* <Route path="/shop" component={Shop} /> */}
             {/* <Route path="/blog" component={Blog} />
             <Route path="/register" component={Register} />

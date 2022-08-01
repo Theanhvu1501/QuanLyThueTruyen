@@ -50,19 +50,19 @@ export default function Pages() {
         <>
           <Switch>
             <Route exact path={`${path}/Sach`}>
-              <RFlist />
+              <RFlist path="Sach" />
             </Route>
             <Route exact path={`${path}/SachTaiCuaHang`}>
-              <RFlist />
+              <RFlist path="SachTaiCuaHang" />
             </Route>
             <Route exact path={`${path}/KhachHang`}>
-              <RFlist />
+              <RFlist path="KhachHang" />
             </Route>
             <Route exact path={`${path}/NhanVien`}>
-              <RFlist />
+              <RFlist path="NhanVien" />
             </Route>
             <Route exact path={`${path}/ThongTinGiaoDich`}>
-              <RFlist />
+              <RFlist path="ThongTinGiaoDich" />
             </Route>
           </Switch>
         </>
