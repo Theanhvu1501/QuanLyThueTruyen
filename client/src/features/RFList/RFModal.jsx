@@ -1,9 +1,18 @@
-import { Button, Col, Form, Input, InputNumber, Modal, Row } from "antd";
+import {
+  Button,
+  Col,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Modal,
+  Row,
+  Select,
+} from "antd";
 import React, { forwardRef, useImperativeHandle, useState } from "react";
 export const RFModal = forwardRef((props, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [isNew, setIsNew] = useState(false);
-  const [type, setType] = useState("Sach");
   const [promise, setPromise] = useState({});
 
   const [form] = Form.useForm();
@@ -16,7 +25,6 @@ export const RFModal = forwardRef((props, ref) => {
     () => {
       return {
         show: (isNew, data) => {
-          console.log(data);
           form.resetFields();
           setIsNew(isNew);
           setShowModal(true);
@@ -41,12 +49,17 @@ export const RFModal = forwardRef((props, ref) => {
   const onSave = async () => {
     //Save data
     const { api } = props;
-    if (isNew) {
-      await api.create(form.getFieldsValue());
-    } else {
-      await api.update(form.getFieldsValue());
+    try {
+      if (isNew) {
+        await api.create(form.getFieldsValue());
+      } else {
+        await api.update(form.getFieldsValue());
+      }
+      message.success(`${isNew ? "Thêm mới" : "Sửa"} thành công`);
+      closeModal(true);
+    } catch {
+      message.error(`Error.`);
     }
-    closeModal(true);
   };
 
   const getType = (type) => {
@@ -65,23 +78,12 @@ export const RFModal = forwardRef((props, ref) => {
   };
 
   const getTitle = () => {
-    return `${isNew ? "Thêm mới" : "Sửa"} ${getType(type)}`;
+    return `${isNew ? "Thêm mới" : "Sửa"} ${getType(props.type)}`;
   };
 
-  return (
-    <Modal
-      visible={showModal}
-      title={getTitle()}
-      onCancel={() => closeModal()}
-      style={{ top: 15 }}
-      destroyOnClose={false}
-      footer={false}
-      width={window.innerWidth - 10 > 1138 ? 1350 : window.innerWidth - 10}
-      bodyStyle={{
-        overflowY: "auto",
-      }}
-    >
-      <Form labelAlign="left" form={form}>
+  const renderModalBook = () => {
+    return (
+      <>
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
@@ -135,6 +137,159 @@ export const RFModal = forwardRef((props, ref) => {
             </Form.Item>
           </Col>
         </Row>
+      </>
+    );
+  };
+
+  const renderModalStore = () => {
+    return (
+      <>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Tên"
+              name="Ten"
+              rules={[
+                { required: true, message: "Please input your username!" },
+              ]}
+              {...col12}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Địa chỉ"
+              name="DiaChi"
+              rules={[
+                { required: true, message: "Please input your username!" },
+              ]}
+              {...col12}
+            >
+              <Input style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+        </Row>
+      </>
+    );
+  };
+
+  const renderModalCustomer = () => {
+    return (
+      <>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Tên"
+              name="Ten"
+              rules={[
+                { required: true, message: "Please input your username!" },
+              ]}
+              {...col12}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Địa chỉ"
+              name="DiaChi"
+              rules={[
+                { required: true, message: "Please input your username!" },
+              ]}
+              {...col12}
+            >
+              <Input style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="SDT"
+              name="SDT"
+              rules={[
+                { required: true, message: "Please input your username!" },
+              ]}
+              {...col12}
+            >
+              <Input style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+        </Row>
+      </>
+    );
+  };
+
+  const renderModalStaff = () => {
+    return (
+      <>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Tên"
+              name="Ten"
+              rules={[
+                { required: true, message: "Please input your username!" },
+              ]}
+              {...col12}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Chức vụ"
+              name="ChucVu"
+              rules={[
+                { required: true, message: "Please input your username!" },
+              ]}
+              {...col12}
+            >
+              <Input style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Cửa hàng"
+              name="IdCuaHang"
+              rules={[
+                { required: true, message: "Please input your username!" },
+              ]}
+              {...col12}
+            >
+              <Select>
+                {(props.dataCuaHang || []).map((i) => {
+                  return <Select.Option value={i.Id}>{i.Ten}</Select.Option>;
+                })}
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+      </>
+    );
+  };
+
+  return (
+    <Modal
+      visible={showModal}
+      title={getTitle()}
+      onCancel={() => closeModal()}
+      style={{ top: 15 }}
+      destroyOnClose={false}
+      footer={false}
+      width={window.innerWidth - 10 > 1138 ? 1350 : window.innerWidth - 10}
+      bodyStyle={{
+        overflowY: "auto",
+      }}
+    >
+      <Form labelAlign="left" form={form}>
+        {props.type === "Sach" ? renderModalBook() : null}
+        {props.type === "CuaHang" ? renderModalStore() : null}
+        {props.type === "KhachHang" ? renderModalCustomer() : null}
+        {props.type === "NhanVien" ? renderModalStaff() : null}
 
         <Form.Item
           label=""
@@ -154,7 +309,7 @@ export const RFModal = forwardRef((props, ref) => {
             type="primary"
             danger
             style={{ marginLeft: 16 }}
-            onClick={closeModal}
+            onClick={() => closeModal()}
           >
             Hủy
           </Button>

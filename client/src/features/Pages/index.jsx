@@ -1,11 +1,14 @@
 import { Button, Row } from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Header from "../../components/Header";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import RFlist from "../RFList/RFList";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
+import { RFNewForm } from "./RFNewForm";
+
 export default function Pages() {
   let { path, url } = useRouteMatch();
+  const modalNewFormRef = useRef();
   return (
     <div>
       <Header />
@@ -41,6 +44,7 @@ export default function Pages() {
                   </svg>
                 </span>
               }
+              onClick={() => modalNewFormRef.current.show()}
             >
               Tạo mới
             </Button>
@@ -64,9 +68,13 @@ export default function Pages() {
             <Route exact path={`${path}/ThongTinGiaoDich`}>
               <RFlist path="ThongTinGiaoDich" />
             </Route>
+            <Route exact path={`${path}/CuaHang`}>
+              <RFlist path="CuaHang" />
+            </Route>
           </Switch>
         </>
       </Row>
+      <RFNewForm ref={modalNewFormRef} />
     </div>
   );
 }

@@ -1,10 +1,12 @@
-import { message, Progress, Spin, Table } from "antd";
+import { message, Modal, Progress, Spin, Table } from "antd";
+import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import bookAPI from "../../api/bookAPI";
 import bookStoreAPI from "../../api/bookStoreAPI";
 import customerAPI from "../../api/customerAPI";
 import rentAPI from "../../api/rentAPI";
 import staffAPI from "../../api/staffAPI";
+import storeAPI from "../../api/storeAPI";
 import {
   emptyIcon,
   logoIconLoading,
@@ -18,8 +20,12 @@ export default function RFlist(props) {
   const [progressPercent, setProgressPercent] = useState(1);
   const [selectedRows, setSelectedRows] = useState([]);
   const [data, setData] = useState([]);
-
   const [loading, setLoading] = useState(false);
+  const [dataCuaHang, setDataCuaHang] = useState([]);
+  const [dataSach, setDataSach] = useState([]);
+  const [dataKhachHang, setDataKhachHang] = useState([]);
+  const [dataNhanVien, setDataNhanVien] = useState([]);
+
   const modalRef = useRef();
 
   const apiService = () => {
@@ -28,6 +34,7 @@ export default function RFlist(props) {
     if (path.includes("KhachHang")) return customerAPI;
     if (path.includes("NhanVien")) return staffAPI;
     if (path.includes("SachTaiCuaHang")) return bookStoreAPI;
+    if (path.includes("CuaHang")) return storeAPI;
     return bookAPI;
   };
 
@@ -43,24 +50,52 @@ export default function RFlist(props) {
   //useEffac
   const fetchAPI = async () => {
     setLoading(true);
+    setSelectedRows([]);
+
     const api = apiService();
-    const data = await api.getAll();
+    const [data, dataCuaHang, dataSach, dataNhanVien, dataKhachHang] =
+      await Promise.all([
+        api.getAll(),
+        ["SachTaiCuaHang", "NhanVien", "ThongTinGiaoDich"].includes(props.path)
+          ? storeAPI.getAll()
+          : [],
+        ["SachTaiCuaHang", "ThongTinGiaoDich"].includes(props.path)
+          ? bookAPI.getAll()
+          : [],
+        ["ThongTinGiaoDich"].includes(props.path) ? staffAPI.getAll() : [],
+        ["ThongTinGiaoDich"].includes(props.path) ? customerAPI.getAll() : [],
+      ]);
     setLoading(false);
     setData(data);
+    setDataCuaHang(dataCuaHang);
+    setDataSach(dataSach);
+    setDataNhanVien(dataNhanVien);
+    setDataKhachHang(dataKhachHang);
   };
 
+  //Modal confirm
+
   const onDelete = async () => {
-    console.log(selectedRows);
-    const api = apiService();
-    try {
-      await Promise.all(
-        selectedRows.map((data) => {
-          return api.delete(data.Id);
-        })
-      );
-    } catch (e) {
-      message.error("error");
-    }
+    Modal.confirm({
+      title: "Xóa",
+      content: "Bạn có chắc chắn muốn xóa ?",
+      cancelText: "Hủy",
+      okText: "Đồng ý",
+      onOk: async () => {
+        const api = apiService();
+        try {
+          await Promise.all(
+            selectedRows.map((data) => {
+              return api.delete(data.Id);
+            })
+          );
+          message.success(`Xóa thành công`);
+          fetchAPI();
+        } catch (e) {
+          message.error("error");
+        }
+      },
+    });
   };
   //Fetch api
   useEffect(() => {
@@ -73,45 +108,224 @@ export default function RFlist(props) {
     },
   };
 
-  const columns = [
+  const titleOpenModal = () => {
+    const { path } = props;
+    if (path === "SachTaiCuaHang") return "Còn lại";
+    if (path === "Thue") return "Thuê";
+    return "Tên";
+  };
+
+  const title = () => {
+    const { path } = props;
+    if (path === "SachTaiCuaHang") return "ConLai";
+    if (path === "Thue") return "Thue";
+    return "Ten";
+  };
+
+  let columns = [
     {
       title: "STT",
       dataIndex: "stt",
       width: 100,
       render: (text, record, index) => {
-        return <span>{index + 1}</span>;
+        return (
+          <span
+            style={{ cursor: "pointer" }}
+            onClick={async () => {
+              const result = await modalRef.current.show(false, record);
+              if (result.dataChange) {
+                fetchAPI();
+              }
+            }}
+          >
+            {" "}
+            {index + 1}
+          </span>
+        );
       },
     },
     {
-      title: "Tên",
-      dataIndex: "Ten",
-      render: (text, record, index) => (
-        <span
-          style={{ cursor: "pointer" }}
-          onClick={async () => {
-            const result = await modalRef.current.show(false, record);
-            if (result.dataChange) {
-              fetchAPI();
-            }
-          }}
-        >
-          {record.Ten}
-        </span>
-      ),
-    },
-    {
-      title: "Giá thuê",
-      dataIndex: "GiaThue",
-    },
-    {
-      title: "Đặt cọc",
-      dataIndex: "DatCoc",
-    },
-    {
-      title: "TheLoai",
-      dataIndex: "TheLoai",
+      title: titleOpenModal(),
+      dataIndex: title(),
     },
   ];
+  const getColumns = () => {
+    const { path } = props;
+    if (path === "Sach") {
+      columns = columns.concat([
+        {
+          title: "Giá thuê",
+          dataIndex: "GiaThue",
+        },
+        {
+          title: "Đặt cọc",
+          dataIndex: "DatCoc",
+        },
+        {
+          title: "TheLoai",
+          dataIndex: "TheLoai",
+        },
+      ]);
+    }
+
+    if (path === "CuaHang") {
+      columns = columns.concat([
+        {
+          title: "Địa chi",
+          dataIndex: "DiaChi",
+        },
+      ]);
+    }
+
+    if (path === "NhanVien") {
+      columns = columns.concat([
+        {
+          title: "Chức vụ",
+          dataIndex: "ChucVu",
+        },
+        {
+          title: "Cửa Hàng",
+          dataIndex: "IdCuaHang",
+          render: (text, record, index) => {
+            return (
+              <span>
+                {dataCuaHang.find((i) => i.Id === record.IdCuaHang)?.Ten}
+              </span>
+            );
+          },
+        },
+      ]);
+    }
+
+    if (path === "KhachHang") {
+      columns = columns.concat([
+        {
+          title: "Địa chỉ",
+          dataIndex: "DiaChi",
+        },
+        {
+          title: "SDT",
+          dataIndex: "SDT",
+        },
+      ]);
+    }
+
+    if (path === "SachTaiCuaHang") {
+      columns = columns.concat([
+        {
+          title: "Sách",
+          dataIndex: "IdSach",
+          render: (text, record, index) => {
+            return (
+              <span>{dataSach.find((i) => i.Id === record.IdSach)?.Ten}</span>
+            );
+          },
+        },
+        {
+          title: "CuaHang",
+          dataIndex: "IdCuaHang",
+          render: (text, record, index) => {
+            return (
+              <span>
+                {dataCuaHang.find((i) => i.Id === record.IdCuaHang)?.Ten}
+              </span>
+            );
+          },
+        },
+      ]);
+    }
+
+    if (path === "ThongTinGiaoDich") {
+      return [
+        {
+          title: "STT",
+          dataIndex: "stt",
+          width: 100,
+          render: (text, record, index) => {
+            return <span> {index + 1}</span>;
+          },
+        },
+        {
+          title: "Ngày thuê",
+          dataIndex: "NgayThue",
+          render: (text, recode, index) => {
+            return (
+              <span>
+                {recode.NgayThue
+                  ? moment(recode.NgayThue).format("DD/MM/YYYY")
+                  : ""}
+              </span>
+            );
+          },
+        },
+        {
+          title: "Giá thuê",
+          dataIndex: "GiaThue",
+        },
+        {
+          title: "Đặt cọc",
+          dataIndex: "DatCoc",
+        },
+        {
+          title: "Ngày trả",
+          dataIndex: "NgayTra",
+          render: (text, recode, index) => {
+            return (
+              <span>
+                {recode.NgayTra
+                  ? moment(recode.NgayTra).format("DD/MM/YYYY")
+                  : ""}
+              </span>
+            );
+          },
+        },
+        {
+          title: "Sách",
+          dataIndex: "IdSach",
+          render: (text, record, index) => {
+            return (
+              <span>{dataSach.find((i) => i.Id === record.IdSach)?.Ten}</span>
+            );
+          },
+        },
+        {
+          title: "CuaHang",
+          dataIndex: "IdCuaHang",
+          render: (text, record, index) => {
+            return (
+              <span>
+                {dataCuaHang.find((i) => i.Id === record.IdCuaHang)?.Ten}
+              </span>
+            );
+          },
+        },
+        {
+          title: "Nhân viên",
+          dataIndex: "IdNhanVien",
+          render: (text, record, index) => {
+            return (
+              <span>
+                {dataNhanVien.find((i) => i.Id === record.IdNhanVien)?.Ten}
+              </span>
+            );
+          },
+        },
+        {
+          title: "Khách hàng",
+          dataIndex: "IdKhachHang",
+          render: (text, record, index) => {
+            return (
+              <span>
+                {dataKhachHang.find((i) => i.Id === record.IdKhachHang)?.Ten}
+              </span>
+            );
+          },
+        },
+      ];
+    }
+
+    return columns;
+  };
 
   return (
     <div
@@ -142,27 +356,32 @@ export default function RFlist(props) {
         />
         <div style={{ marginRight: 12 }}>{iconExcel}</div>
         <span>Xuất excel</span>
-        <div
-          style={{
-            marginRight: 32,
-            marginLeft: 32,
-            height: 20,
-            backgroundColor: "gray",
-            width: 1,
-          }}
-        />
-        <div style={{ marginRight: 12 }}>{addIcon}</div>
-        <span
-          style={{ cursor: "pointer" }}
-          onClick={async () => {
-            const result = await modalRef.current.show(true);
-            if (result.dataChange) {
-              fetchAPI();
-            }
-          }}
-        >
-          Thêm
-        </span>
+
+        {props.path !== "ThongTinGiaoDich" ?? (
+          <>
+            <div
+              style={{
+                marginRight: 32,
+                marginLeft: 32,
+                height: 20,
+                backgroundColor: "gray",
+                width: 1,
+              }}
+            />
+            <div style={{ marginRight: 12 }}>{addIcon}</div>
+            <span
+              style={{ cursor: "pointer" }}
+              onClick={async () => {
+                const result = await modalRef.current.show(true);
+                if (result.dataChange) {
+                  fetchAPI();
+                }
+              }}
+            >
+              Thêm
+            </span>
+          </>
+        )}
         {selectedRows.length > 0 && (
           <>
             {" "}
@@ -197,12 +416,14 @@ export default function RFlist(props) {
       ) : null}
       <Spin spinning={loading} indicator={logoIconLoading}>
         <Table
-          rowSelection={{
-            type: "checkbox",
-            ...rowSelection,
-          }}
+          rowSelection={
+            props.path !== "ThongTinGiaoDich" && {
+              type: "checkbox",
+              ...rowSelection,
+            }
+          }
           rowKey="Id"
-          columns={columns}
+          columns={getColumns()}
           dataSource={data}
           locale={{
             emptyText: loading ? <div /> : emptyIcon,
@@ -210,7 +431,13 @@ export default function RFlist(props) {
           pagination={false}
           scroll={{ y: `calc(100vh - 200px)` }}
         />
-        <RFModal ref={modalRef} api={apiService()} />
+        <RFModal
+          ref={modalRef}
+          api={apiService()}
+          type={props.path}
+          dataCuaHang={dataCuaHang}
+          dataSach={dataSach}
+        />
       </Spin>
     </div>
   );
