@@ -22,7 +22,7 @@ function App() {
   const setIsAdmin = useSetRecoilState(isAdminState);
   const setCart = useSetRecoilState(cartState);
 
-  // //refresh_token
+  // // //refresh_token
   // useEffect(() => {
   //   const firstLogin = localStorage.getItem("firstLogin");
   //   if (firstLogin) {
@@ -39,22 +39,22 @@ function App() {
   // }, []);
 
   //check Login
-  useEffect(() => {
-    if (token) {
-      const getUser = async () => {
-        try {
-          const user = await authAPI.getUser(token);
-          setIsLogged(true);
-          setCart(user.cart);
+  // useEffect(() => {
+  //   if (token) {
+  //     const getUser = async () => {
+  //       try {
+  //         const user = await authAPI.getUser(token);
+  //         setIsLogged(true);
+  //         setCart(user.cart);
 
-          if (user.role === 1) setIsAdmin(true);
-        } catch (error) {
-          console.log(error.message);
-        }
-      };
-      getUser();
-    }
-  }, [token]);
+  //         if (user.role === 1) setIsAdmin(true);
+  //       } catch (error) {
+  //         console.log(error.message);
+  //       }
+  //     };
+  //     getUser();
+  //   }
+  // }, [token]);
 
   return (
     <>

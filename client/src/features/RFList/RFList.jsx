@@ -50,8 +50,6 @@ export default function RFlist(props) {
   //useEffac
   const fetchAPI = async () => {
     setLoading(true);
-    setSelectedRows([]);
-
     const api = apiService();
     const [data, dataCuaHang, dataSach, dataNhanVien, dataKhachHang] =
       await Promise.all([
@@ -86,7 +84,7 @@ export default function RFlist(props) {
         try {
           await Promise.all(
             selectedRows.map((data) => {
-              return api.delete(data.Id);
+              return api.update({ ...data, Deleted: 1 });
             })
           );
           message.success(`Xóa thành công`);
@@ -357,7 +355,7 @@ export default function RFlist(props) {
         <div style={{ marginRight: 12 }}>{iconExcel}</div>
         <span>Xuất excel</span>
 
-        {props.path !== "ThongTinGiaoDich" ?? (
+        {props.path !== "ThongTinGiaoDich" ? (
           <>
             <div
               style={{
@@ -381,7 +379,7 @@ export default function RFlist(props) {
               Thêm
             </span>
           </>
-        )}
+        ) : null}
         {selectedRows.length > 0 && (
           <>
             {" "}

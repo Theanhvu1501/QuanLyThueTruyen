@@ -11,7 +11,7 @@ class SServiceBase {
 
   async getAll() {
     if (!this.pool) await this.connectionPool();
-    const query = `Select * from ${this.tableName}`;
+    const query = `Select * from ${this.tableName} where Deleted is null`;
     const data = await this.pool.query(query);
     return data.recordset;
   }

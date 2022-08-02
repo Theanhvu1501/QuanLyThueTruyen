@@ -9,6 +9,13 @@ import { RFNewForm } from "./RFNewForm";
 export default function Pages() {
   let { path, url } = useRouteMatch();
   const modalNewFormRef = useRef();
+
+  useEffect(() => {
+    if (!localStorage.getItem("firstLogin")) {
+      window.location.href = "/";
+    }
+    return () => {};
+  }, []);
   return (
     <div>
       <Header />

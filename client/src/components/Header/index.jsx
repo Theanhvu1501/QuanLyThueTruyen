@@ -55,13 +55,17 @@ function getContextMenu(setIsLogged) {
             fill="Violet"
           />
         </svg>
-        
-         <span style={{ marginLeft: 32 }} onClick={async() => {
-          // await authAPI.logout()
-          // localStorage.clear()
-          // setIsLogged(false)
-          window.location.href = '/'
-         }}>Đăng xuất</span>
+
+        <span
+          style={{ marginLeft: 32 }}
+          onClick={async () => {
+            await authAPI.logout();
+            localStorage.clear();
+            window.location.href = "/";
+          }}
+        >
+          Đăng xuất
+        </span>
       </Menu.Item>
     </Menu>
   );
