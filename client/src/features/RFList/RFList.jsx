@@ -1,4 +1,5 @@
-import { message, Modal, Progress, Spin, Table } from "antd";
+import { Input, message, Modal, Progress, Spin, Table } from "antd";
+import _ from "lodash";
 import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import bookAPI from "../../api/bookAPI";
@@ -25,7 +26,9 @@ export default function RFlist(props) {
   const [dataSach, setDataSach] = useState([]);
   const [dataKhachHang, setDataKhachHang] = useState([]);
   const [dataNhanVien, setDataNhanVien] = useState([]);
+  const [filter, setFilter] = useState("");
 
+  const { Search } = Input;
   const modalRef = useRef();
 
   const apiService = () => {
@@ -118,6 +121,24 @@ export default function RFlist(props) {
     if (path === "SachTaiCuaHang") return "ConLai";
     if (path === "Thue") return "Thue";
     return "Ten";
+  };
+
+  const getData = () => {
+    const fieldName = ["SachTaiCuaHang", "ThongTinGiaoDich"].includes(
+      props.path
+    )
+      ? "IdSach"
+      : "Ten";
+    if (fieldName === "IdSach") {
+      const listSach = dataSach.filter((i) =>
+        i.Ten?.toLowerCase()?.includes(filter.toLowerCase())
+      );
+      return data.filter((d) => listSach.map((i) => i.Id).includes(d.IdSach));
+    } else {
+      return data.filter((i) =>
+        _.get(i, "Ten")?.toLowerCase()?.includes(filter.toLowerCase())
+      );
+    }
   };
 
   let columns = [
@@ -324,7 +345,6 @@ export default function RFlist(props) {
 
     return columns;
   };
-
   return (
     <div
       style={{
@@ -382,7 +402,6 @@ export default function RFlist(props) {
         ) : null}
         {selectedRows.length > 0 && (
           <>
-            {" "}
             <div
               style={{
                 marginRight: 32,
@@ -398,6 +417,12 @@ export default function RFlist(props) {
             </span>
           </>
         )}
+        <span style={{ position: "absolute", right: 16 }}>
+          <Search
+            placeholder="search"
+            onChange={_.debounce((e) => setFilter(e.target.value), 500)}
+          />
+        </span>
       </div>
       {loading ? (
         <Progress
@@ -422,7 +447,7 @@ export default function RFlist(props) {
           }
           rowKey="Id"
           columns={getColumns()}
-          dataSource={data}
+          dataSource={getData()}
           locale={{
             emptyText: loading ? <div /> : emptyIcon,
           }}
